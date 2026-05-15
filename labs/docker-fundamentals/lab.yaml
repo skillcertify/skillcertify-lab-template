@@ -87,29 +87,9 @@ challenges:
     points: 25
     validation_script: docs/validate_compose.sh
 
-  - id: knowledge-layers
-    title: "How many layers?"
-    description: |
-      Given this Dockerfile:
-      ```
-      FROM ubuntu:22.04
-      RUN apt-get update
-      RUN apt-get install -y curl
-      COPY app.py /app/
-      ```
-      How many new layers are added on top of the base image?
-    type: single_choice
-    points: 10
-    options:
-      - "1"
-      - "2"
-      - "3"
-      - "4"
-    answer: "3"
-
 scoring:
   passing_score: 70
-  max_score: 100
+  max_score: 90
 
 marketplace:
   credit_price: 2

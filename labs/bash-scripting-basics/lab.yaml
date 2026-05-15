@@ -60,33 +60,9 @@ challenges:
     points: 25
     validation_script: docs/validate_countdown.sh
 
-  - id: knowledge-shebang
-    title: "Shebang Line"
-    description: "Which shebang line is correct for a Bash script?"
-    type: single_choice
-    points: 15
-    options:
-      - "#!/bin/bash"
-      - "#/bin/bash"
-      - "//bin/bash"
-      - "#!/usr/bin/env sh"
-    answer: "#!/bin/bash"
-
-  - id: knowledge-exit
-    title: "Exit Codes"
-    description: "What exit code indicates success in a Bash script?"
-    type: single_choice
-    points: 15
-    options:
-      - "0"
-      - "1"
-      - "127"
-      - "-1"
-    answer: "0"
-
 scoring:
   passing_score: 70
-  max_score: 100
+  max_score: 70
 
 marketplace:
   credit_price: 0  # WASM labs are always free — this value is ignored by the platform

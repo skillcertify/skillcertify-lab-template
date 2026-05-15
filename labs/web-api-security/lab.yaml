@@ -98,33 +98,9 @@ challenges:
     points: 20
     validation_script: docs/validate_bola.sh
 
-  - id: knowledge-owasp-1
-    title: "OWASP Top 10 — #1 Vulnerability"
-    description: "What is the #1 vulnerability in the OWASP Top 10 (2021)?"
-    type: single_choice
-    points: 15
-    options:
-      - "Broken Access Control"
-      - "SQL Injection"
-      - "Cross-Site Scripting (XSS)"
-      - "Security Misconfiguration"
-    answer: "Broken Access Control"
-
-  - id: knowledge-jwt
-    title: "JWT Security"
-    description: "Which JWT algorithm is considered insecure and should never be used?"
-    type: single_choice
-    points: 15
-    options:
-      - "none"
-      - "HS256"
-      - "RS256"
-      - "ES256"
-    answer: "none"
-
 scoring:
   passing_score: 70
-  max_score: 100
+  max_score: 70
 
 marketplace:
   credit_price: 2

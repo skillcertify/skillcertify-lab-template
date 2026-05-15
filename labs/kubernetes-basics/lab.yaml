@@ -116,33 +116,9 @@ challenges:
     points: 20
     validation_script: docs/validate_configmap.sh
 
-  - id: knowledge-pods
-    title: "Kubernetes Concepts"
-    description: "Which Kubernetes object ensures a specified number of pod replicas are always running?"
-    type: single_choice
-    points: 10
-    options:
-      - "ReplicaSet"
-      - "DaemonSet"
-      - "StatefulSet"
-      - "Job"
-    answer: "ReplicaSet"
-
-  - id: knowledge-namespace
-    title: "Namespaces"
-    description: "What is the purpose of Kubernetes namespaces?"
-    type: single_choice
-    points: 10
-    options:
-      - "Isolate resources within a cluster into virtual sub-clusters"
-      - "Separate clusters across different cloud providers"
-      - "Encrypt pod-to-pod traffic"
-      - "Store container images"
-    answer: "Isolate resources within a cluster into virtual sub-clusters"
-
 scoring:
   passing_score: 70
-  max_score: 100
+  max_score: 80
 
 marketplace:
   credit_price: 2

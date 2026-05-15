@@ -96,21 +96,9 @@ challenges:
     points: 15
     validation_script: docs/validate_filter.sh
 
-  - id: knowledge-groupby
-    title: "pandas groupby"
-    description: "Which pandas method groups rows by a column value and allows aggregate functions like sum() or mean()?"
-    type: single_choice
-    points: 15
-    options:
-      - "groupby()"
-      - "pivot()"
-      - "merge()"
-      - "stack()"
-    answer: "groupby()"
-
 scoring:
   passing_score: 70
-  max_score: 100
+  max_score: 85
 
 marketplace:
   credit_price: 0  # WASM labs are always free — this value is ignored by the platform

@@ -102,33 +102,9 @@ challenges:
     points: 20
     validation_script: docs/validate_extract.sh
 
-  - id: knowledge-sqli-type
-    title: "SQLi Classification"
-    description: "A login bypass using ' OR '1'='1 is an example of which type of SQL injection?"
-    type: single_choice
-    points: 10
-    options:
-      - "In-band SQLi (Classic)"
-      - "Blind Boolean-based SQLi"
-      - "Out-of-band SQLi"
-      - "Time-based Blind SQLi"
-    answer: "In-band SQLi (Classic)"
-
-  - id: knowledge-prevention
-    title: "SQLi Prevention"
-    description: "What is the most effective defense against SQL injection?"
-    type: single_choice
-    points: 10
-    options:
-      - "Parameterized queries (prepared statements)"
-      - "Input length validation"
-      - "Escaping special characters with backslash"
-      - "Using a Web Application Firewall (WAF)"
-    answer: "Parameterized queries (prepared statements)"
-
 scoring:
   passing_score: 70
-  max_score: 100
+  max_score: 80
 
 marketplace:
   credit_price: 2

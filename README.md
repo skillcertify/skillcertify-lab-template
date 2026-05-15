@@ -111,15 +111,8 @@ challenges:
     title: "Create a file"
     description: "Create /root/hello.txt containing the text 'Hello'."
     type: script
-    points: 50
+    points: 100
     validation_script: docs/validate.sh
-
-  - id: task-2
-    title: "What exit code means success?"
-    type: single_choice
-    points: 50
-    options: ["0", "1", "127", "-1"]
-    answer: "0"
 
 scoring:
   passing_score: 70
@@ -186,12 +179,7 @@ challenges:
 
 | Type | How it's graded |
 |------|----------------|
-| `script` | Bash script runs inside the VM; exits `0` = pass |
-| `single_choice` | Candidate picks one option; auto-graded against `answer` |
-| `multiple_choice` | Candidate picks multiple options; auto-graded against `answer` list |
-| `question` | Short text answer; compared against `answer` string |
-| `question_ai` | Long-form answer; AI evaluates against `answer` as a rubric |
-| `manual` | Company or admin reviewer grades it manually |
+| `script` | Bash script runs inside the VM; must exit `0` to pass — the only supported type |
 
 ### `scoring` block
 

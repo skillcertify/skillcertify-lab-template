@@ -75,35 +75,9 @@ challenges:
     points: 15
     validation_script: docs/validate_disk.sh
 
-  - id: knowledge-chmod
-    title: "What does chmod 755 mean?"
-    description: "What permissions does `chmod 755` give to a file?"
-    type: single_choice
-    points: 10
-    options:
-      - "Owner: rwx, Group: r-x, Others: r-x"
-      - "Owner: rw-, Group: rw-, Others: r--"
-      - "Owner: rwx, Group: rwx, Others: r-x"
-      - "Owner: r-x, Group: r-x, Others: r-x"
-    answer: "Owner: rwx, Group: r-x, Others: r-x"
-
-  - id: knowledge-signals
-    title: "Which signals terminate a process?"
-    description: "Select all signals that can terminate a process."
-    type: multiple_choice
-    points: 15
-    options:
-      - SIGTERM
-      - SIGKILL
-      - SIGHUP
-      - SIGSTOP
-    answer:
-      - SIGTERM
-      - SIGKILL
-
 scoring:
   passing_score: 70
-  max_score: 100
+  max_score: 75
 
 marketplace:
   credit_price: 1
