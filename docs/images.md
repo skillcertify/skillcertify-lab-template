@@ -135,3 +135,53 @@ and reference it in your lab's `environment.image` field.
 > **Note:** Custom images must expose VNC on port 5900 (VDI desktop) or a shell
 > on stdin (VDI terminal) to work with the SkillCertify platform. Basing your
 > image on one of the official images above is the easiest way to ensure this.
+
+---
+
+## Local testing with Docker
+
+All official VDI images are public — you can pull and run them locally to test
+your `init_script`, check that packages install correctly, or inspect the desktop
+before publishing your lab.
+
+### VDI Terminal (headless shell)
+
+```bash
+docker pull ghcr.io/skillcertify/vdi-terminal:latest
+docker run -it --rm ghcr.io/skillcertify/vdi-terminal:latest bash
+```
+
+Once inside, run your `init_script` commands manually to verify they work.
+
+### VDI Desktop (noVNC in browser)
+
+```bash
+docker pull ghcr.io/skillcertify/vdi-xfce-ubuntu:latest
+docker run -d --rm \
+  -p 6080:6080 \
+  --name vdi-test \
+  ghcr.io/skillcertify/vdi-xfce-ubuntu:latest
+```
+
+Open **http://localhost:6080** in your browser — you will see the full XFCE
+desktop served via noVNC. Use the same port for any specialized image:
+
+```bash
+# DevOps image with Terraform, kubectl, Docker pre-installed
+docker run -d --rm -p 6080:6080 --name vdi-devops \
+  ghcr.io/skillcertify/vdi-xfce-ubuntu-devops:latest
+
+# Python / data science image
+docker run -d --rm -p 6080:6080 --name vdi-python \
+  ghcr.io/skillcertify/vdi-xfce-ubuntu-python:latest
+
+# Security image (nmap, sqlmap, Burp Suite CE…)
+docker run -d --rm -p 6080:6080 --name vdi-security \
+  ghcr.io/skillcertify/vdi-xfce-ubuntu-security:latest
+```
+
+Stop the container when done:
+
+```bash
+docker stop vdi-test
+```
