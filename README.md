@@ -126,7 +126,7 @@ scoring:
   max_score: 100
 
 marketplace:
-  credit_price: 0   # 0 = free
+  credit_price: 0   # WASM labs are always free — this value is ignored by the platform
 ```
 
 ```bash
