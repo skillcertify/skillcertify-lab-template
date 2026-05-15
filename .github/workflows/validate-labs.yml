@@ -98,6 +98,43 @@ jobs:
 
           echo "All lab definitions are structurally valid."
 
+      - name: Check challenge types and credit_price rules
+        run: |
+          ERRORS=0
+
+          while IFS= read -r file; do
+            echo "Checking challenge types and credits in $file..."
+
+            # All challenge types must be 'script'
+            while IFS= read -r ctype; do
+              if [ "$ctype" != "script" ]; then
+                echo "::error file=$file::Invalid challenge type '$ctype'. Only 'type: script' is supported."
+                ERRORS=$((ERRORS + 1))
+              fi
+            done < <(grep -E '^\s+type\s*:' "$file" | sed 's/.*type\s*:\s*//' | tr -d '"'"'" | tr -d '[:space:]')
+
+            # Extract mode and credit_price for VDI range check
+            mode=$(grep -E '^mode\s*:' "$file" | sed 's/.*mode\s*:\s*//' | tr -d '"'"'" | tr -d '[:space:]' | head -1)
+            credit_price=$(grep -E 'credit_price\s*:' "$file" | sed 's/.*credit_price\s*:\s*//' | tr -d '"'"'" | tr -d '[:space:]' | head -1)
+
+            if [[ "$mode" == "vdi_terminal" || "$mode" == "vdi_desktop" ]]; then
+              if [[ -n "$credit_price" ]]; then
+                if ! [[ "$credit_price" =~ ^[0-9]+$ ]] || [ "$credit_price" -lt 1 ] || [ "$credit_price" -gt 20 ]; then
+                  echo "::error file=$file::VDI lab credit_price must be between 1 and 20 (got '$credit_price')."
+                  ERRORS=$((ERRORS + 1))
+                fi
+              fi
+            fi
+          done < <(find labs -name "lab.yaml" -o -name "metadata.yml")
+
+          if [ "$ERRORS" -gt 0 ]; then
+            echo ""
+            echo "Found $ERRORS challenge/credit error(s) in lab definitions."
+            exit 1
+          fi
+
+          echo "All challenge types and credit prices are valid."
+
       - name: Check validation scripts are executable and output valid JSON
         run: |
           ERRORS=0

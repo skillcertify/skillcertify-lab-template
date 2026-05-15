@@ -20,7 +20,7 @@ duration_minutes: 60
 passing_score: 70
 
 environment:
-  image: ghcr.io/skillcertify/vdi-ubuntu-desktop:22.04
+  image: ghcr.io/skillcertify/vdi-xfce-ubuntu:latest
   init_script: |
     apt-get update -qq
     apt-get install -y -qq docker.io docker-compose-plugin curl

@@ -20,7 +20,7 @@ duration_minutes: 45
 passing_score: 70
 
 environment:
-  image: ghcr.io/skillcertify/vdi-ubuntu-terminal:22.04
+  image: ghcr.io/skillcertify/vdi-terminal:latest
   init_script: |
     apt-get update -qq
     apt-get install -y -qq net-tools curl wget
