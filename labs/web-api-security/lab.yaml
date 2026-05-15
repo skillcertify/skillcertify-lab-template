@@ -1,0 +1,130 @@
+version: 1
+title: "Web & API Security — Basics"
+slug: web-api-security-basics
+description: |
+  Find and exploit common web vulnerabilities in a live environment.
+  You will attack OWASP Juice Shop (a vulnerable web app) and VAmPI
+  (a vulnerable REST API) running alongside your desktop.
+difficulty: intermediate
+mode: vdi_desktop
+category: security
+skills:
+  - web-security
+  - api-security
+  - owasp
+tags:
+  - security
+  - owasp
+  - api
+  - burp
+  - sql-injection
+duration_minutes: 60
+passing_score: 70
+
+# helm_packages deploys the VDI workspace and any sidecar services.
+# The workspace chart is always required for VDI labs.
+# Additional charts add target services running in the same namespace.
+helm_packages:
+  - name: workspace
+    helm_repository: $HELM_LOCAL_REPO_PATH
+    helm_package_name: workspace
+    helm_package_version: ""
+    helm_values_path: helm-values/workspace.yaml
+
+  - name: owasp-juice-shop
+    helm_repository: oci://ghcr.io/skillcertify
+    helm_package_name: owasp-juice-shop
+    helm_package_version: "0.1.0"
+    helm_values_path: helm-values/owasp-juice-shop.yaml
+
+  - name: vampi
+    helm_repository: oci://ghcr.io/skillcertify
+    helm_package_name: vampi
+    helm_package_version: "0.1.0"
+    helm_values_path: helm-values/vampi.yaml
+
+instructions: |
+  # Web & API Security — Basics
+
+  You have two live targets running in your lab environment:
+
+  | Target | URL | Description |
+  |--------|-----|-------------|
+  | OWASP Juice Shop | http://juice-shop:3000 | Deliberately vulnerable Node.js web app |
+  | VAmPI | http://vampi:5000 | Deliberately vulnerable REST API |
+
+  Open a terminal or Firefox to get started.
+
+  **Tools available:** curl, Burp Suite CE, nmap, sqlmap, httpie
+
+  **Rules:** Only attack the provided targets — no external hosts.
+
+challenges:
+  - id: sqli-login
+    title: "SQL Injection — Admin Login"
+    description: |
+      Bypass the Juice Shop login form using SQL injection to log in as the administrator.
+
+      **Hint:** The email field is vulnerable. Try classic SQLi payloads.
+
+      When done, check if you have a valid JWT token:
+      ```
+      curl -s http://juice-shop:3000/rest/user/whoami -H "Authorization: Bearer <token>"
+      ```
+      Save the token to `/root/admin_token.txt`.
+    type: script
+    points: 25
+    validation_script: docs/validate_sqli.sh
+
+  - id: api-auth-bypass
+    title: "API Authentication Bypass"
+    description: |
+      Register a user on VAmPI (`POST /users/v1/register`) then find an endpoint
+      that returns another user's data without proper authorization.
+
+      Save the leaked email to `/root/leaked_email.txt`.
+    type: script
+    points: 25
+    validation_script: docs/validate_api_bypass.sh
+
+  - id: api-bola
+    title: "BOLA — Broken Object Level Authorization"
+    description: |
+      VAmPI has a BOLA vulnerability. As a regular user, access the book endpoint
+      `/books/v1/<title>` for a book you did not create.
+
+      Save the book title you accessed to `/root/bola_book.txt`.
+    type: script
+    points: 20
+    validation_script: docs/validate_bola.sh
+
+  - id: knowledge-owasp-1
+    title: "OWASP Top 10 — #1 Vulnerability"
+    description: "What is the #1 vulnerability in the OWASP Top 10 (2021)?"
+    type: single_choice
+    points: 15
+    options:
+      - "Broken Access Control"
+      - "SQL Injection"
+      - "Cross-Site Scripting (XSS)"
+      - "Security Misconfiguration"
+    answer: "Broken Access Control"
+
+  - id: knowledge-jwt
+    title: "JWT Security"
+    description: "Which JWT algorithm is considered insecure and should never be used?"
+    type: single_choice
+    points: 15
+    options:
+      - "none"
+      - "HS256"
+      - "RS256"
+      - "ES256"
+    answer: "none"
+
+scoring:
+  passing_score: 70
+  max_score: 100
+
+marketplace:
+  credit_price: 2

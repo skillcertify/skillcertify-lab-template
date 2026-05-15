@@ -1,0 +1,19 @@
+vdi:
+  image: ghcr.io/skillcertify/vdi-xfce-ubuntu-security
+  tag: latest
+  imagePullPolicy: Always
+  permissions:
+    root: false
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1024Mi
+    limits:
+      cpu: 1500m
+      memory: 3072Mi
+  init_script: |
+    #!/bin/bash
+    # Wait for target services to be ready
+    timeout 60 bash -c 'until curl -sf http://juice-shop:3000 >/dev/null; do sleep 2; done'
+    timeout 30 bash -c 'until curl -sf http://vampi:5000 >/dev/null; do sleep 2; done'
+    echo "Targets ready."

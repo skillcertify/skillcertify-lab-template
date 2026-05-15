@@ -34,28 +34,42 @@ Fork this repo  →  Add your lab in labs/<name>/  →  Push to GitHub  →  Imp
 ```
 skillcertify-lab-template/
 ├── labs/
-│   ├── bash-scripting-basics/
-│   │   ├── lab.yaml                # Lab definition
-│   │   └── docs/                   # Validation scripts (one per task)
+│   ├── bash-scripting-basics/      # WASM lab (browser-based, free)
+│   │   ├── lab.yaml
+│   │   └── docs/
 │   │       ├── validate_hello.sh
 │   │       ├── validate_calc.sh
 │   │       └── validate_countdown.sh
-│   ├── linux-sysadmin-intro/
+│   ├── linux-sysadmin-intro/       # VDI terminal lab (1 credit)
 │   │   ├── lab.yaml
 │   │   └── docs/
 │   │       ├── validate_user.sh
 │   │       ├── validate_permissions.sh
 │   │       ├── validate_process.sh
 │   │       └── validate_disk.sh
-│   └── docker-fundamentals/
+│   ├── docker-fundamentals/        # VDI desktop lab (2 credits)
+│   │   ├── lab.yaml
+│   │   └── docs/
+│   │       ├── validate_nginx.sh
+│   │       ├── validate_image.sh
+│   │       ├── validate_volume.sh
+│   │       └── validate_compose.sh
+│   └── web-api-security/           # VDI desktop + Juice Shop + VAmPI sidecars
 │       ├── lab.yaml
+│       ├── helm-values/            # One values file per Helm release
+│       │   ├── workspace.yaml
+│       │   ├── owasp-juice-shop.yaml
+│       │   └── vampi.yaml
 │       └── docs/
-│           ├── validate_nginx.sh
-│           ├── validate_image.sh
-│           ├── validate_volume.sh
-│           └── validate_compose.sh
-└── docs/
-    └── images.md                   # Available container images & WASM environments
+│           ├── validate_sqli.sh
+│           ├── validate_api_bypass.sh
+│           └── validate_bola.sh
+├── docs/
+│   ├── images.md                   # Available VDI container images & WASM environments
+│   └── helm-charts.md              # Available Helm charts (sidecar services)
+└── .github/
+    └── workflows/
+        └── validate-labs.yml       # CI: enforces image whitelist + structure checks
 ```
 
 Each lab lives in its own folder. The platform picks up any file named `lab.yaml` (or `lab.yml`) inside any subdirectory of `labs/`.
@@ -162,7 +176,7 @@ challenges:
     description: "What the candidate must do. Markdown supported."
     type: script               # see task types below
     points: 25
-    validation_script: labs/my-lab/validate_task.sh   # path from repo root
+    validation_script: docs/validate_task.sh   # relative to this lab's folder
 ```
 
 ### Task types
@@ -242,9 +256,46 @@ Push your changes to GitHub, then go back to Creator Studio → "Import from Git
 
 ---
 
-## Available images
+## Available images and sidecar services
 
-See **[docs/images.md](docs/images.md)** for the full list of available container images for VDI terminal and desktop labs, including specialized images for DevOps, Python, Java, security, and more.
+- **[docs/images.md](docs/images.md)** — VDI container images (terminal + desktop, 9 flavours)
+- **[docs/helm-charts.md](docs/helm-charts.md)** — Helm charts you can add as sidecar services (Juice Shop, VAmPI, Gitea, DummyJSON)
+
+---
+
+## Sidecar services (helm_packages)
+
+VDI labs can deploy additional services alongside the desktop using `helm_packages`. Each sidecar runs in the same isolated namespace and is reachable via its Helm release name as a DNS hostname.
+
+```yaml
+# lab.yaml
+helm_packages:
+  - name: workspace                        # required for all VDI labs
+    helm_repository: $HELM_LOCAL_REPO_PATH
+    helm_package_name: workspace
+    helm_package_version: ""
+    helm_values_path: helm-values/workspace.yaml
+
+  - name: owasp-juice-shop                 # reachable at http://owasp-juice-shop:3000
+    helm_repository: oci://ghcr.io/skillcertify
+    helm_package_name: owasp-juice-shop
+    helm_package_version: "0.1.0"
+    helm_values_path: helm-values/owasp-juice-shop.yaml
+```
+
+See the `labs/web-api-security/` example for a working multi-chart lab. Full chart documentation is in **[docs/helm-charts.md](docs/helm-charts.md)**.
+
+---
+
+## Container image policy
+
+> **Only images from `ghcr.io/skillcertify/` are permitted.**
+
+Labs that reference images from any other registry will be rejected at import time and will fail CI. This applies to:
+- `environment.image` in `lab.yaml`
+- `image:` fields in all `helm-values/*.yaml` files
+
+The GitHub Actions workflow in `.github/workflows/validate-labs.yml` enforces this automatically on every push and pull request. Use images from **[docs/images.md](docs/images.md)** and chart values from **[docs/helm-charts.md](docs/helm-charts.md)** — they are already whitelisted.
 
 ---
 

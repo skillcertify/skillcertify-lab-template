@@ -1,0 +1,131 @@
+name: Validate Labs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate lab definitions
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check container image whitelist
+        run: |
+          ALLOWED_REGISTRY="ghcr.io/skillcertify/"
+          ERRORS=0
+
+          echo "Scanning lab.yaml files for environment.image..."
+          while IFS= read -r file; do
+            # Extract lines with "image:" key (handles both "image: ..." and "  image: ...")
+            images=$(grep -E '^\s*image\s*:' "$file" | sed 's/.*image\s*:\s*//' | tr -d '"'"'" | tr -d '[:space:]')
+            for img in $images; do
+              if [[ "$img" != "$ALLOWED_REGISTRY"* ]]; then
+                echo "::error file=$file::Unauthorized image '$img'. Only $ALLOWED_REGISTRY* is allowed."
+                ERRORS=$((ERRORS + 1))
+              fi
+            done
+          done < <(find labs -name "lab.yaml" -o -name "metadata.yml")
+
+          echo "Scanning helm-values/ files for image fields..."
+          while IFS= read -r file; do
+            images=$(grep -E '^\s*image\s*:' "$file" | sed 's/.*image\s*:\s*//' | tr -d '"'"'" | tr -d '[:space:]')
+            for img in $images; do
+              if [[ "$img" != "$ALLOWED_REGISTRY"* ]]; then
+                echo "::error file=$file::Unauthorized image '$img'. Only $ALLOWED_REGISTRY* is allowed."
+                ERRORS=$((ERRORS + 1))
+              fi
+            done
+          done < <(find labs -path "*/helm-values/*.yaml")
+
+          if [ "$ERRORS" -gt 0 ]; then
+            echo ""
+            echo "Found $ERRORS unauthorized container image(s)."
+            echo "All images must be from the official SkillCertify registry: $ALLOWED_REGISTRY"
+            exit 1
+          fi
+
+          echo "All container images are from the authorized registry. OK."
+
+      - name: Check lab.yaml structure
+        run: |
+          ERRORS=0
+
+          while IFS= read -r file; do
+            dir=$(dirname "$file")
+            echo "Checking $file..."
+
+            # Must have a title
+            if ! grep -q 'title\s*:' "$file"; then
+              echo "::error file=$file::Missing required field 'title'."
+              ERRORS=$((ERRORS + 1))
+            fi
+
+            # Must have at least one challenge
+            if ! grep -q 'challenges\s*:' "$file" && ! grep -q 'questions\s*:' "$file"; then
+              echo "::error file=$file::No challenges defined. Add at least one challenge."
+              ERRORS=$((ERRORS + 1))
+            fi
+
+            # If validation_script is referenced, the file must exist
+            while IFS= read -r script_path; do
+              full_path="$dir/$script_path"
+              if [ ! -f "$full_path" ]; then
+                echo "::error file=$file::validation_script '$script_path' not found at '$full_path'."
+                ERRORS=$((ERRORS + 1))
+              fi
+            done < <(grep 'validation_script\s*:' "$file" | sed 's/.*validation_script\s*:\s*//' | tr -d '"'"'")
+
+            # If helm_packages references helm_values_path, those files must exist
+            while IFS= read -r values_path; do
+              full_path="$dir/$values_path"
+              if [ ! -f "$full_path" ]; then
+                echo "::error file=$file::helm_values_path '$values_path' not found at '$full_path'."
+                ERRORS=$((ERRORS + 1))
+              fi
+            done < <(grep 'helm_values_path\s*:' "$file" | sed 's/.*helm_values_path\s*:\s*//' | tr -d '"'"'")
+          done < <(find labs -name "lab.yaml" -o -name "metadata.yml")
+
+          if [ "$ERRORS" -gt 0 ]; then
+            echo ""
+            echo "Found $ERRORS structural error(s) in lab definitions."
+            exit 1
+          fi
+
+          echo "All lab definitions are structurally valid."
+
+      - name: Check validation scripts are executable and output valid JSON
+        run: |
+          ERRORS=0
+
+          while IFS= read -r script; do
+            # Must start with a shebang
+            first=$(head -1 "$script")
+            if [[ "$first" != "#!"* ]]; then
+              echo "::error file=$script::Missing shebang line (#!)."
+              ERRORS=$((ERRORS + 1))
+            fi
+
+            # Must contain the JSON pass/fail pattern
+            if ! grep -q '"pass"' "$script"; then
+              echo "::error file=$script::Script must output JSON with a 'pass' field."
+              ERRORS=$((ERRORS + 1))
+            fi
+
+            # Must not use 'exit 1' or other non-zero exits (always exit 0)
+            if grep -qE 'exit\s+[^0]' "$script"; then
+              echo "::warning file=$script::Validation scripts should always exit 0. Use {\"pass\":false} for failures."
+            fi
+          done < <(find labs -name "validate_*.sh")
+
+          if [ "$ERRORS" -gt 0 ]; then
+            echo ""
+            echo "Found $ERRORS error(s) in validation scripts."
+            exit 1
+          fi
+
+          echo "All validation scripts look correct."
