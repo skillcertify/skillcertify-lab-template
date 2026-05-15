@@ -1,0 +1,130 @@
+version: 1
+title: "Docker Fundamentals"
+slug: docker-fundamentals
+description: |
+  Learn Docker hands-on: build images, run containers, manage volumes,
+  and use Docker Compose. Full desktop environment with VS Code and a terminal.
+difficulty: intermediate
+mode: vdi_desktop
+category: docker
+skills:
+  - docker
+  - containers
+  - devops
+tags:
+  - docker
+  - containers
+  - devops
+  - compose
+duration_minutes: 60
+passing_score: 70
+credits: 2
+
+environment:
+  image: skillcertify/ubuntu-desktop-vdi:22.04
+  init_script: |
+    # Install Docker inside the VDI container
+    apt-get update -qq
+    apt-get install -y -qq docker.io docker-compose-plugin curl
+    systemctl start docker 2>/dev/null || true
+    # Give the user access to Docker
+    usermod -aG docker candidate 2>/dev/null || true
+
+instructions: |
+  # Docker Fundamentals
+
+  You have a full Ubuntu desktop environment with Docker pre-installed.
+
+  Open a terminal (right-click the desktop → Terminal) to get started.
+
+  **What you'll do:**
+  1. Pull and run a container
+  2. Build a custom image from a Dockerfile
+  3. Persist data with a volume
+  4. Orchestrate services with Docker Compose
+
+  **Useful commands:**
+  ```bash
+  docker run hello-world
+  docker ps -a
+  docker images
+  docker build -t myimage .
+  docker compose up -d
+  ```
+
+challenges:
+  - id: run-container
+    title: "Run an Nginx Container"
+    description: |
+      Run an `nginx:alpine` container named `webserver` in detached mode,
+      mapping port `8080` on the host to port `80` in the container.
+
+      Verify it works: `curl http://localhost:8080` should return the Nginx welcome page.
+    type: script
+    points: 20
+    validation_script: docs/validate_nginx.sh
+
+  - id: build-image
+    title: "Build a Custom Image"
+    description: |
+      Create a `Dockerfile` at `/root/myapp/Dockerfile` that:
+      - Starts `FROM python:3.11-slim`
+      - Sets the working directory to `/app`
+      - Copies a file `hello.py` that prints `Hello from Docker!`
+      - Sets the default command to run `hello.py`
+
+      Build it as `myapp:latest`.
+    type: script
+    points: 25
+    validation_script: docs/validate_image.sh
+
+  - id: volume
+    title: "Persist Data with a Volume"
+    description: |
+      Create a Docker volume named `mydata`.
+      Run an `alpine` container that mounts `mydata` at `/data` and creates
+      the file `/data/hello.txt` with the content `persistent`.
+
+      After the container exits, the file should still be in the volume.
+    type: script
+    points: 20
+    validation_script: docs/validate_volume.sh
+
+  - id: compose
+    title: "Docker Compose — Web + DB"
+    description: |
+      Create `/root/compose/docker-compose.yml` that defines two services:
+      - `db`: uses `postgres:15-alpine`, env `POSTGRES_PASSWORD=secret`
+      - `web`: uses `nginx:alpine`, depends on `db`, exposes port `9090:80`
+
+      Run `docker compose up -d` from `/root/compose/` and verify both services are running.
+    type: script
+    points: 25
+    validation_script: docs/validate_compose.sh
+
+  - id: knowledge-layers
+    title: "Docker Image Layers"
+    description: |
+      You have this Dockerfile:
+      ```
+      FROM ubuntu:22.04
+      RUN apt-get update
+      RUN apt-get install -y curl
+      COPY app.py /app/
+      ```
+      How many layers does this image have (not counting the base)?
+    type: single_choice
+    points: 10
+    options:
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+    answer: "3"
+
+scoring:
+  passing_score: 70
+  max_score: 100
+
+marketplace:
+  credit_price: 2

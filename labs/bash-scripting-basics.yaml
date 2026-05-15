@@ -1,0 +1,94 @@
+version: 1
+title: "Bash Scripting Basics"
+slug: bash-scripting-basics
+description: |
+  Test your knowledge of essential Bash scripting: variables, loops, conditionals,
+  and file I/O. Runs entirely in the browser — no server required.
+difficulty: beginner
+mode: wasm
+category: linux
+skills:
+  - bash
+  - linux
+  - scripting
+tags:
+  - bash
+  - shell
+  - beginner
+duration_minutes: 30
+passing_score: 70
+credits: 0   # free lab
+
+environment:
+  wasm_image: skillcertify/archlinux-wasm:latest
+  init_script: |
+    # Packages installed before the lab starts (runs silently)
+    pacman -Sy --noconfirm bash coreutils grep sed gawk 2>/dev/null
+
+instructions: |
+  # Bash Scripting Basics
+
+  Welcome! In this lab you will write and run small Bash scripts directly in your browser.
+
+  **Tips:**
+  - Use the terminal on the right to run your scripts
+  - All changes are saved for the duration of the session
+  - You can check your progress at any time by clicking **Check Tasks**
+
+challenges:
+  - id: hello-world
+    title: "Hello, World!"
+    description: |
+      Create a file called `/root/hello.sh` that prints `Hello, World!` when executed.
+    type: script
+    points: 20
+    validation_script: docs/validate_hello.sh
+
+  - id: variables
+    title: "Variables and Arithmetic"
+    description: |
+      Create `/root/calc.sh` that takes two numbers as arguments and prints their sum.
+      Example: `./calc.sh 3 7` should print `10`.
+    type: script
+    points: 25
+    validation_script: docs/validate_calc.sh
+
+  - id: loops
+    title: "For Loop"
+    description: |
+      Create `/root/countdown.sh` that counts down from 5 to 1, printing each number
+      on a new line, then prints `Go!`.
+    type: script
+    points: 25
+    validation_script: docs/validate_countdown.sh
+
+  - id: knowledge-1
+    title: "Shebang Line"
+    description: "Which shebang line is correct for a Bash script?"
+    type: single_choice
+    points: 15
+    options:
+      - "#!/bin/bash"
+      - "#/bin/bash"
+      - "//bin/bash"
+      - "#!/usr/bin/env sh"
+    answer: "#!/bin/bash"
+
+  - id: knowledge-2
+    title: "Exit Codes"
+    description: "What exit code indicates success in a Bash script?"
+    type: single_choice
+    points: 15
+    options:
+      - "0"
+      - "1"
+      - "127"
+      - "-1"
+    answer: "0"
+
+scoring:
+  passing_score: 70
+  max_score: 100
+
+marketplace:
+  credit_price: 0
