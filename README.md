@@ -36,21 +36,24 @@ skillcertify-lab-template/
 ├── labs/
 │   ├── bash-scripting-basics/
 │   │   ├── lab.yaml                # Lab definition
-│   │   ├── validate_hello.sh       # Validation scripts (one per task)
-│   │   ├── validate_calc.sh
-│   │   └── validate_countdown.sh
+│   │   └── docs/                   # Validation scripts (one per task)
+│   │       ├── validate_hello.sh
+│   │       ├── validate_calc.sh
+│   │       └── validate_countdown.sh
 │   ├── linux-sysadmin-intro/
 │   │   ├── lab.yaml
-│   │   ├── validate_user.sh
-│   │   ├── validate_permissions.sh
-│   │   ├── validate_process.sh
-│   │   └── validate_disk.sh
+│   │   └── docs/
+│   │       ├── validate_user.sh
+│   │       ├── validate_permissions.sh
+│   │       ├── validate_process.sh
+│   │       └── validate_disk.sh
 │   └── docker-fundamentals/
 │       ├── lab.yaml
-│       ├── validate_nginx.sh
-│       ├── validate_image.sh
-│       ├── validate_volume.sh
-│       └── validate_compose.sh
+│       └── docs/
+│           ├── validate_nginx.sh
+│           ├── validate_image.sh
+│           ├── validate_volume.sh
+│           └── validate_compose.sh
 └── docs/
     └── images.md                   # Available container images & WASM environments
 ```
@@ -92,7 +95,7 @@ challenges:
     description: "Create /root/hello.txt containing the text 'Hello'."
     type: script
     points: 50
-    validation_script: labs/my-lab/validate.sh
+    validation_script: docs/validate.sh
 
   - id: task-2
     title: "What exit code means success?"
@@ -110,11 +113,11 @@ marketplace:
 ```
 
 ```bash
-# labs/my-lab/validate.sh
+# labs/my-lab/docs/validate.sh
 #!/bin/bash
-[ -f /root/hello.txt ] || exit 1
-grep -q "Hello" /root/hello.txt || exit 1
-exit 0
+[ -f /root/hello.txt ] || { echo '{"pass":false,"message":"Create /root/hello.txt first."}'; exit 0; }
+grep -q "Hello" /root/hello.txt || { echo '{"pass":false,"message":"hello.txt must contain the word Hello."}'; exit 0; }
+echo '{"pass":true,"message":"Task completed correctly."}'
 ```
 
 ---
@@ -194,18 +197,29 @@ marketplace:
 
 Scripts referenced in `validation_script` run inside the candidate's live environment.
 
-- Path is **relative to the repo root** (e.g. `labs/my-lab/validate.sh`)
-- Must exit `0` on success, non-zero on failure
-- Standard output is shown to the candidate if the task fails
+- Path is **relative to the lab folder** (e.g. `docs/validate_user.sh` resolves to `labs/my-lab/docs/validate_user.sh`)
+- Put scripts inside a `docs/` subfolder — this matches the convention used in the official SkillCertify labs repo
+- Scripts must **always exit 0** and print a JSON result to stdout
 - Keep scripts fast (under 5 s) — they run every time the candidate clicks **Check Tasks**
 
 ```bash
 #!/bin/bash
-# Example: check that a file exists and contains expected content
-[ -f /root/result.txt ]          || { echo "FAIL: result.txt not found"; exit 1; }
-grep -q "expected" /root/result.txt || { echo "FAIL: wrong content"; exit 1; }
-exit 0
+# docs/validate_task.sh — always exit 0, output JSON
+
+[ -f /root/result.txt ] || {
+  echo '{"pass":false,"message":"result.txt not found. Run: echo done > /root/result.txt"}'
+  exit 0
+}
+
+grep -q "expected" /root/result.txt || {
+  echo '{"pass":false,"message":"result.txt does not contain the expected text."}'
+  exit 0
+}
+
+echo '{"pass":true,"message":"Task completed correctly."}'
 ```
+
+The `message` is shown to the candidate in the task panel — make it actionable (tell them what to run to fix it).
 
 ---
 

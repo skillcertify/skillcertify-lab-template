@@ -45,7 +45,7 @@ challenges:
       - Member of the `sudo` group
     type: script
     points: 20
-    validation_script: labs/linux-sysadmin-intro/validate_user.sh
+    validation_script: docs/validate_user.sh
 
   - id: file-permissions
     title: "Set File Permissions"
@@ -56,7 +56,7 @@ challenges:
       - Others: no access
     type: script
     points: 20
-    validation_script: labs/linux-sysadmin-intro/validate_permissions.sh
+    validation_script: docs/validate_permissions.sh
 
   - id: process-management
     title: "Find and Kill a Process"
@@ -65,7 +65,7 @@ challenges:
       When you click **Check Tasks**, no `sleep 9999` process should be running.
     type: script
     points: 20
-    validation_script: labs/linux-sysadmin-intro/validate_process.sh
+    validation_script: docs/validate_process.sh
 
   - id: disk-usage
     title: "Disk Usage Report"
@@ -73,7 +73,7 @@ challenges:
       Write the output of `df -h` to `/root/disk_report.txt`.
     type: script
     points: 15
-    validation_script: labs/linux-sysadmin-intro/validate_disk.sh
+    validation_script: docs/validate_disk.sh
 
   - id: knowledge-chmod
     title: "What does chmod 755 mean?"

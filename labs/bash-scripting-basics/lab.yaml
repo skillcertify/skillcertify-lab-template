@@ -40,7 +40,7 @@ challenges:
       Create a file called `/root/hello.sh` that prints `Hello, World!` when executed.
     type: script
     points: 20
-    validation_script: labs/bash-scripting-basics/validate_hello.sh
+    validation_script: docs/validate_hello.sh
 
   - id: variables
     title: "Variables and Arithmetic"
@@ -49,7 +49,7 @@ challenges:
       Example: `./calc.sh 3 7` should print `10`.
     type: script
     points: 25
-    validation_script: labs/bash-scripting-basics/validate_calc.sh
+    validation_script: docs/validate_calc.sh
 
   - id: loops
     title: "For Loop — Countdown"
@@ -58,7 +58,7 @@ challenges:
       then prints `Go!`.
     type: script
     points: 25
-    validation_script: labs/bash-scripting-basics/validate_countdown.sh
+    validation_script: docs/validate_countdown.sh
 
   - id: knowledge-shebang
     title: "Shebang Line"

@@ -49,7 +49,7 @@ challenges:
       Verify: `curl http://localhost:8080` should return the Nginx welcome page.
     type: script
     points: 20
-    validation_script: labs/docker-fundamentals/validate_nginx.sh
+    validation_script: docs/validate_nginx.sh
 
   - id: build-image
     title: "Build a Custom Image"
@@ -63,7 +63,7 @@ challenges:
       Build the image as `myapp:latest`.
     type: script
     points: 25
-    validation_script: labs/docker-fundamentals/validate_image.sh
+    validation_script: docs/validate_image.sh
 
   - id: volume
     title: "Persist Data with a Volume"
@@ -73,7 +73,7 @@ challenges:
       After the container exits the file must still exist in the volume.
     type: script
     points: 20
-    validation_script: labs/docker-fundamentals/validate_volume.sh
+    validation_script: docs/validate_volume.sh
 
   - id: compose
     title: "Docker Compose — Web + DB"
@@ -85,7 +85,7 @@ challenges:
       Run `docker compose up -d` from `/root/compose/` — both services must be running.
     type: script
     points: 25
-    validation_script: labs/docker-fundamentals/validate_compose.sh
+    validation_script: docs/validate_compose.sh
 
   - id: knowledge-layers
     title: "How many layers?"
