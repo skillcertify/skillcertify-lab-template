@@ -78,11 +78,14 @@ Each lab lives in its own folder. The platform picks up any file named `lab.yaml
 
 ## Lab types
 
-| Type | `mode` value | Environment | Best for |
-|------|-------------|-------------|----------|
-| **WASM** | `wasm` | Browser-based Linux (Arch, no install needed) | Bash scripting, CLI tasks, quick assessments |
-| **VDI Terminal** | `vdi_terminal` | Cloud Linux VM — terminal only | Server admin, DevOps, networking |
-| **VDI Desktop** | `vdi_desktop` | Cloud Linux VM — full GUI desktop | IDE coding, data science, desktop tools |
+| Type | `mode` value | Environment | Credits | Best for |
+|------|-------------|-------------|---------|----------|
+| **WASM** | `wasm` | Browser-based Linux (Arch, no install needed) | **Free** (always 0) | Bash scripting, CLI tasks, quick assessments |
+| **VDI Terminal** | `vdi_terminal` | Cloud Linux VM — terminal only | Paid (≥ 1 credit) | Server admin, DevOps, networking |
+| **VDI Desktop** | `vdi_desktop` | Cloud Linux VM — full GUI desktop | Paid (≥ 1 credit) | IDE coding, data science, desktop tools |
+
+> **WASM labs are always free.** They run entirely in the candidate's browser with no cloud VM cost.
+> **VDI labs cost credits** (set `marketplace.credit_price` ≥ 1). Free VDI labs are not supported.
 
 See **[docs/images.md](docs/images.md)** for the full list of available container images and WASM environments.
 

@@ -229,3 +229,21 @@ See [`labs/web-api-security/`](../labs/web-api-security/) for a working example.
 The DNS hostname of each sidecar service is the Helm **release name** (the `name`
 field in `helm_packages`), not the chart name. So if you name your release
 `my-target`, the VDI can reach it at `http://my-target:<port>`.
+
+---
+
+## Open-source attribution
+
+The sidecar service images are based on the following open-source projects, all
+licensed under the **MIT License**:
+
+| Chart | Upstream project | License |
+|-------|-----------------|---------|
+| `owasp-juice-shop` | [OWASP Juice Shop](https://github.com/juice-shop/juice-shop) — © Björn Kimminich | MIT |
+| `vampi` | [VAmPI](https://github.com/erev0s/VAmPI) — © erev0s | MIT |
+| `gitea` | [Gitea](https://github.com/go-gitea/gitea) — © The Gitea Authors | MIT |
+| `dummyjson` | [DummyJSON](https://github.com/Ovi/DummyJSON) — © Ovi | MIT |
+
+SkillCertify re-publishes these images to its own registry (`ghcr.io/skillcertify/`) for
+controlled distribution. Original copyright notices and MIT license texts are preserved
+inside each image at `/usr/share/doc/<package>/LICENSE`.
