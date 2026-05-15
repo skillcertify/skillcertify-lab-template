@@ -1,0 +1,21 @@
+vdi:
+  image: ghcr.io/skillcertify/vdi-xfce-ubuntu-security
+  tag: latest
+  imagePullPolicy: Always
+  permissions:
+    root: false
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1024Mi
+    limits:
+      cpu: 1500m
+      memory: 3072Mi
+  init_script: |
+    #!/bin/bash
+    # Wait for Juice Shop to be ready before candidate sees the environment
+    timeout 90 bash -c 'until curl -sf http://juice-shop:3000 >/dev/null; do sleep 3; done'
+
+monitor:
+  dns:
+    enabled: true

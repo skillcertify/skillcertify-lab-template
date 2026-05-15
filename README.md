@@ -34,27 +34,27 @@ Fork this repo  →  Add your lab in labs/<name>/  →  Push to GitHub  →  Imp
 ```
 skillcertify-lab-template/
 ├── labs/
-│   ├── bash-scripting-basics/      # WASM lab (browser-based, free)
+│   ├── bash-scripting-basics/         # WASM — free, beginner
 │   │   ├── lab.yaml
 │   │   └── docs/
-│   │       ├── validate_hello.sh
-│   │       ├── validate_calc.sh
-│   │       └── validate_countdown.sh
-│   ├── linux-sysadmin-intro/       # VDI terminal lab (1 credit)
+│   ├── python-data-analysis/          # WASM — free, beginner (pandas)
 │   │   ├── lab.yaml
 │   │   └── docs/
-│   │       ├── validate_user.sh
-│   │       ├── validate_permissions.sh
-│   │       ├── validate_process.sh
-│   │       └── validate_disk.sh
-│   ├── docker-fundamentals/        # VDI desktop lab (2 credits)
+│   ├── linux-sysadmin-intro/          # VDI terminal — 1 credit, intermediate
 │   │   ├── lab.yaml
 │   │   └── docs/
-│   │       ├── validate_nginx.sh
-│   │       ├── validate_image.sh
-│   │       ├── validate_volume.sh
-│   │       └── validate_compose.sh
-│   └── web-api-security/           # VDI desktop + Juice Shop + VAmPI sidecars
+│   ├── docker-fundamentals/           # VDI desktop — 2 credits, intermediate
+│   │   ├── lab.yaml
+│   │   └── docs/
+│   ├── kubernetes-basics/             # VDI terminal + vCluster — 2 credits
+│   │   ├── lab.yaml
+│   │   ├── helm-values/
+│   │   └── docs/
+│   ├── sql-injection-fundamentals/    # VDI desktop + Juice Shop — 2 credits
+│   │   ├── lab.yaml
+│   │   ├── helm-values/
+│   │   └── docs/
+│   └── web-api-security/              # VDI desktop + Juice Shop + VAmPI sidecars
 │       ├── lab.yaml
 │       ├── helm-values/            # One values file per Helm release
 │       │   ├── workspace.yaml

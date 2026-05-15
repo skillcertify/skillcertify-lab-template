@@ -1,0 +1,24 @@
+vdi:
+  image: ghcr.io/skillcertify/vdi-xfce-ubuntu-devops
+  tag: latest
+  imagePullPolicy: Always
+  permissions:
+    root: false
+  resources:
+    requests:
+      cpu: 300m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2048Mi
+  init_script: |
+    #!/bin/bash
+    # Create the lab namespace for candidate workloads
+    kubectl create namespace lab --dry-run=client -o yaml | kubectl apply -f -
+
+vcluster:
+  enabled: true
+
+monitor:
+  dns:
+    enabled: true

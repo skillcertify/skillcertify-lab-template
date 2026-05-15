@@ -1,0 +1,148 @@
+version: 1
+title: "Kubernetes Basics"
+slug: kubernetes-basics
+description: |
+  Learn to deploy, inspect, and troubleshoot workloads on a real Kubernetes cluster.
+  You get a dedicated vCluster (isolated K8s cluster inside the lab) so you can
+  run kubectl commands without any risk to production systems.
+difficulty: intermediate
+mode: vdi_terminal
+category: devops
+skills:
+  - kubernetes
+  - devops
+  - containers
+  - kubectl
+tags:
+  - kubernetes
+  - k8s
+  - devops
+  - containers
+  - cloud-native
+duration_minutes: 60
+passing_score: 70
+
+helm_packages:
+  - name: workspace
+    helm_repository: $HELM_LOCAL_REPO_PATH
+    helm_package_name: workspace
+    helm_package_version: ""
+    helm_values_path: helm-values/workspace.yaml
+
+instructions: |
+  # Kubernetes Basics
+
+  You have a dedicated Kubernetes cluster (`kubectl` is pre-configured).
+
+  Complete each task using the terminal. The cluster already has a running namespace
+  called `lab` — use it for all your workloads.
+
+  **Quick reference:**
+  ```
+  kubectl get pods -n lab
+  kubectl describe pod <name> -n lab
+  kubectl logs <name> -n lab
+  kubectl apply -f file.yaml -n lab
+  ```
+
+challenges:
+  - id: create-deployment
+    title: "Create an Nginx Deployment"
+    description: |
+      Create a Deployment named `web` in the `lab` namespace using the `nginx:alpine` image
+      with **2 replicas**.
+
+      ```bash
+      kubectl create deployment web --image=nginx:alpine --replicas=2 -n lab
+      ```
+
+      Verify:
+      ```bash
+      kubectl get deployment web -n lab
+      ```
+    type: script
+    points: 20
+    validation_script: docs/validate_deployment.sh
+
+  - id: expose-service
+    title: "Expose the Deployment as a Service"
+    description: |
+      Expose the `web` deployment as a **ClusterIP** service on port 80.
+
+      ```bash
+      kubectl expose deployment web --port=80 --target-port=80 -n lab
+      ```
+
+      Save the ClusterIP to `/root/service_ip.txt`:
+      ```bash
+      kubectl get svc web -n lab -o jsonpath='{.spec.clusterIP}' > /root/service_ip.txt
+      ```
+    type: script
+    points: 20
+    validation_script: docs/validate_service.sh
+
+  - id: scale-deployment
+    title: "Scale the Deployment"
+    description: |
+      Scale the `web` deployment to **4 replicas**:
+
+      ```bash
+      kubectl scale deployment web --replicas=4 -n lab
+      ```
+
+      Save the ready replica count to `/root/replicas.txt`:
+      ```bash
+      kubectl get deployment web -n lab -o jsonpath='{.status.readyReplicas}' > /root/replicas.txt
+      ```
+    type: script
+    points: 20
+    validation_script: docs/validate_scale.sh
+
+  - id: create-configmap
+    title: "Create and Use a ConfigMap"
+    description: |
+      Create a ConfigMap named `app-config` in the `lab` namespace with the key
+      `APP_ENV=production`:
+
+      ```bash
+      kubectl create configmap app-config --from-literal=APP_ENV=production -n lab
+      ```
+
+      Save the value to `/root/configmap_value.txt`:
+      ```bash
+      kubectl get configmap app-config -n lab -o jsonpath='{.data.APP_ENV}' > /root/configmap_value.txt
+      ```
+    type: script
+    points: 20
+    validation_script: docs/validate_configmap.sh
+
+  - id: knowledge-pods
+    title: "Kubernetes Concepts"
+    description: "Which Kubernetes object ensures a specified number of pod replicas are always running?"
+    type: single_choice
+    points: 10
+    options:
+      - "ReplicaSet"
+      - "DaemonSet"
+      - "StatefulSet"
+      - "Job"
+    answer: "ReplicaSet"
+
+  - id: knowledge-namespace
+    title: "Namespaces"
+    description: "What is the purpose of Kubernetes namespaces?"
+    type: single_choice
+    points: 10
+    options:
+      - "Isolate resources within a cluster into virtual sub-clusters"
+      - "Separate clusters across different cloud providers"
+      - "Encrypt pod-to-pod traffic"
+      - "Store container images"
+    answer: "Isolate resources within a cluster into virtual sub-clusters"
+
+scoring:
+  passing_score: 70
+  max_score: 100
+
+marketplace:
+  credit_price: 2
