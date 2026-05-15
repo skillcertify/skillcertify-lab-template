@@ -9,14 +9,15 @@ Labs are YAML files that define a hands-on environment, tasks, and scoring rules
 ## How it works
 
 ```
-You write a YAML file  →  Push to GitHub  →  Import from Creator Studio  →  Admin reviews  →  Lab goes live
+Fork this repo  →  Add your lab in labs/<name>/  →  Push to GitHub  →  Import in Creator Studio  →  Admin reviews  →  Lab goes live
 ```
 
-1. **Fork this repo** and add your own lab files inside the `labs/` directory
-2. **Connect your GitHub repo** in [Creator Studio](https://demo.skillcertify.io/talent/creator) → "My Labs" → "Import from GitHub"
-3. **Preview and sync** — the platform fetches all `.yaml` files from `labs/` and shows you a preview before importing
-4. **Wait for approval** — the SkillCertify team reviews new labs (usually within 24–48 h)
-5. **Earn credits** — you receive 30% of the credit price every time a candidate completes your lab
+1. **Fork this repo** and create a folder inside `labs/` for each lab you want to build
+2. **Write your lab** — a `lab.yaml` file and optional validation scripts (`.sh`) in the same folder
+3. **Connect your GitHub repo** in [Creator Studio](https://demo.skillcertify.io/talent/creator) → "My Labs" → "Import from GitHub"
+4. **Preview and sync** — the platform fetches every `lab.yaml` under `labs/` and shows a preview before importing
+5. **Wait for approval** — the SkillCertify team reviews new labs (usually within 24–48 h)
+6. **Earn credits** — you receive 30% of the credit price every time a candidate completes your lab
 
 ---
 
@@ -33,178 +34,208 @@ You write a YAML file  →  Push to GitHub  →  Import from Creator Studio  →
 ```
 skillcertify-lab-template/
 ├── labs/
-│   ├── bash-scripting-basics.yaml      # WASM lab — runs in the browser, zero server cost
-│   ├── linux-sysadmin-intro.yaml       # VDI terminal lab — full Linux VM in the cloud
-│   └── docker-fundamentals.yaml        # VDI desktop lab — GUI desktop environment
+│   ├── bash-scripting-basics/
+│   │   ├── lab.yaml                # Lab definition
+│   │   ├── validate_hello.sh       # Validation scripts (one per task)
+│   │   ├── validate_calc.sh
+│   │   └── validate_countdown.sh
+│   ├── linux-sysadmin-intro/
+│   │   ├── lab.yaml
+│   │   ├── validate_user.sh
+│   │   ├── validate_permissions.sh
+│   │   ├── validate_process.sh
+│   │   └── validate_disk.sh
+│   └── docker-fundamentals/
+│       ├── lab.yaml
+│       ├── validate_nginx.sh
+│       ├── validate_image.sh
+│       ├── validate_volume.sh
+│       └── validate_compose.sh
 └── docs/
-    └── verify_task.sh                  # Example bash validation script referenced by labs
+    └── images.md                   # Available container images & WASM environments
 ```
 
-All files inside `labs/` whose name ends in `.yaml` or `.yml` are picked up automatically by the sync.
+Each lab lives in its own folder. The platform picks up any file named `lab.yaml` (or `lab.yml`) inside any subdirectory of `labs/`.
 
 ---
 
 ## Lab types
 
-| Type | Field value | Environment | Best for |
+| Type | `mode` value | Environment | Best for |
 |------|-------------|-------------|----------|
-| **WASM** | `mode: wasm` | Browser-based Linux (v86) | Quick tasks, scripting, no GUI needed |
-| **VDI Terminal** | `mode: vdi_terminal` | Cloud Linux VM (terminal only) | CLI tools, server admin, DevOps |
-| **VDI Desktop** | `mode: vdi_desktop` | Cloud Linux VM (full GUI) | IDE-based coding, desktop tools |
+| **WASM** | `wasm` | Browser-based Linux (Arch, no install needed) | Bash scripting, CLI tasks, quick assessments |
+| **VDI Terminal** | `vdi_terminal` | Cloud Linux VM — terminal only | Server admin, DevOps, networking |
+| **VDI Desktop** | `vdi_desktop` | Cloud Linux VM — full GUI desktop | IDE coding, data science, desktop tools |
+
+See **[docs/images.md](docs/images.md)** for the full list of available container images and WASM environments.
+
+---
+
+## Quick example
+
+```yaml
+# labs/my-lab/lab.yaml
+version: 1
+title: "My First Lab"
+slug: my-first-lab
+description: "A short description shown on the lab card."
+difficulty: beginner        # beginner | intermediate | advanced
+mode: wasm                  # wasm | vdi_terminal | vdi_desktop
+category: linux
+skills: [bash, linux]
+duration_minutes: 30
+passing_score: 70
+
+challenges:
+  - id: task-1
+    title: "Create a file"
+    description: "Create /root/hello.txt containing the text 'Hello'."
+    type: script
+    points: 50
+    validation_script: labs/my-lab/validate.sh
+
+  - id: task-2
+    title: "What exit code means success?"
+    type: single_choice
+    points: 50
+    options: ["0", "1", "127", "-1"]
+    answer: "0"
+
+scoring:
+  passing_score: 70
+  max_score: 100
+
+marketplace:
+  credit_price: 0   # 0 = free
+```
+
+```bash
+# labs/my-lab/validate.sh
+#!/bin/bash
+[ -f /root/hello.txt ] || exit 1
+grep -q "Hello" /root/hello.txt || exit 1
+exit 0
+```
 
 ---
 
 ## YAML field reference
 
-Every lab file lives in `labs/` and must be valid YAML. The fields below are all supported.
+### Top-level fields
 
-### Required fields
+| Field | Required | Type | Description |
+|-------|----------|------|-------------|
+| `title` | ✅ | string | Display name shown to candidates |
+| `description` | ✅ | string | Short summary shown on the lab card |
+| `difficulty` | ✅ | string | `beginner` / `intermediate` / `advanced` |
+| `mode` | ✅ | string | `wasm`, `vdi_terminal`, or `vdi_desktop` |
+| `duration_minutes` | ✅ | int | Time limit in minutes |
+| `slug` | | string | URL-friendly ID (auto-generated from title if omitted) |
+| `version` | | int | Schema version, use `1` |
+| `category` | | string | e.g. `linux`, `docker`, `python`, `networking` |
+| `skills` | | list | Skills validated by this lab |
+| `tags` | | list | Extra searchable tags |
+| `instructions` | | string | Markdown shown to the candidate at the start |
+| `passing_score` | | int | Minimum score % to pass (default: `70`) |
+| `credits` | | int | Credits a candidate spends (shorthand for `marketplace.credit_price`) |
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `title` | string | Display name shown to candidates |
-| `description` | string | Short description (shown on the lab card) |
-| `difficulty` | string | `beginner` / `intermediate` / `advanced` |
-| `mode` | string | `wasm`, `vdi_terminal`, or `vdi_desktop` |
-| `duration_minutes` | int | Time limit in minutes |
-
-### Optional but recommended
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `slug` | string | URL-friendly ID (auto-generated from title if omitted) |
-| `category` | string | e.g. `linux`, `docker`, `python`, `networking` |
-| `skills` | list | Skills this lab validates |
-| `tags` | list | Extra searchable tags |
-| `instructions` | string | Markdown shown to the candidate at the start |
-| `passing_score` | int | Minimum score % to pass (default: 70) |
-
-### Credit pricing
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `credits` | int | Credits a candidate spends to run this lab (0 = free) |
-
-### Environment (WASM labs)
+### `environment` block
 
 ```yaml
 environment:
-  wasm_image: skillcertify/archlinux-wasm:latest  # WASM disk image
+  image: ghcr.io/skillcertify/vdi-terminal:latest   # VDI labs only
+  wasm_image: skillcertify/archlinux-wasm:latest     # WASM labs only (optional)
   init_script: |
-    # Commands run inside the VM before the lab starts
-    pacman -Sy --noconfirm curl git
-```
-
-### Environment (VDI labs)
-
-```yaml
-environment:
-  image: skillcertify/ubuntu-vdi:22.04   # Docker image for the VDI container
-  init_script: |
-    # Commands run inside the container at startup
+    # Bash commands run inside the VM before the lab starts
     apt-get install -y curl
 ```
 
-### Tasks / Challenges
-
-Candidates complete tasks that are scored automatically or manually.
+### `challenges` list
 
 ```yaml
 challenges:
-  - id: task-1
-    title: "Create a user"
-    description: "Create a system user named 'deploy' with a home directory."
-    type: script           # see task types below
+  - id: unique-task-id         # must be unique within the lab
+    title: "Task title"
+    description: "What the candidate must do. Markdown supported."
+    type: script               # see task types below
     points: 25
-    validation_script: docs/verify_task.sh   # path to a bash script in this repo
-
-  - id: task-2
-    title: "What signal terminates a process?"
-    type: multiple_choice
-    points: 10
-    options:
-      - SIGTERM
-      - SIGKILL
-      - SIGHUP
-      - SIGSTOP
-    answer:
-      - SIGTERM
-      - SIGKILL
+    validation_script: labs/my-lab/validate_task.sh   # path from repo root
 ```
 
-#### Task types
+### Task types
 
-| Type | How it's scored |
+| Type | How it's graded |
 |------|----------------|
-| `script` | A bash script runs inside the VM and exits 0 on pass |
-| `multiple_choice` | Candidate picks one option; auto-graded |
-| `single_choice` | Same as above, single answer |
-| `question` | Short text answer; compared against `answer` field |
-| `question_ai` | Long-form answer; AI evaluates against `answer` as rubric |
-| `manual` | Admin or company reviewer grades it |
+| `script` | Bash script runs inside the VM; exits `0` = pass |
+| `single_choice` | Candidate picks one option; auto-graded against `answer` |
+| `multiple_choice` | Candidate picks multiple options; auto-graded against `answer` list |
+| `question` | Short text answer; compared against `answer` string |
+| `question_ai` | Long-form answer; AI evaluates against `answer` as a rubric |
+| `manual` | Company or admin reviewer grades it manually |
 
-### Scoring block
+### `scoring` block
 
 ```yaml
 scoring:
-  passing_score: 70    # % required to pass
+  passing_score: 70   # % required to pass
   max_score: 100
 ```
 
-### Marketplace block
+### `marketplace` block
 
 ```yaml
 marketplace:
-  credit_price: 2      # credits candidates spend (overrides top-level `credits`)
+  credit_price: 2   # credits candidates spend; 0 = free
 ```
 
 ---
 
-## Full examples
+## Validation scripts
 
-See the `labs/` directory:
+Scripts referenced in `validation_script` run inside the candidate's live environment.
 
-- [`labs/bash-scripting-basics.yaml`](labs/bash-scripting-basics.yaml) — WASM, free, beginner
-- [`labs/linux-sysadmin-intro.yaml`](labs/linux-sysadmin-intro.yaml) — VDI terminal, 1 credit, intermediate
-- [`labs/docker-fundamentals.yaml`](labs/docker-fundamentals.yaml) — VDI desktop, 2 credits, intermediate
+- Path is **relative to the repo root** (e.g. `labs/my-lab/validate.sh`)
+- Must exit `0` on success, non-zero on failure
+- Standard output is shown to the candidate if the task fails
+- Keep scripts fast (under 5 s) — they run every time the candidate clicks **Check Tasks**
+
+```bash
+#!/bin/bash
+# Example: check that a file exists and contains expected content
+[ -f /root/result.txt ]          || { echo "FAIL: result.txt not found"; exit 1; }
+grep -q "expected" /root/result.txt || { echo "FAIL: wrong content"; exit 1; }
+exit 0
+```
 
 ---
 
 ## Importing into Creator Studio
 
 1. Go to [demo.skillcertify.io/talent/creator](https://demo.skillcertify.io/talent/creator)
-2. Click **"My Labs"** → **"Import from GitHub"**
-3. Enter your repository (`youruser/skillcertify-lab-template`), branch (`main`), and optionally a GitHub token for private repos
-4. Click **"Preview Labs"** to see what will be imported
-5. Click **"Sync Labs"** to import — labs are created with `draft` status
+2. In the **My Labs** tab, click **"Import from GitHub"**
+3. Enter your repository (e.g. `youruser/skillcertify-lab-template`), branch (`main`), and optionally a GitHub token for private repos
+4. Click **"Preview Labs"** to review what will be imported
+5. Click **"Sync Labs"** — each `lab.yaml` becomes a draft lab in your account
 6. The SkillCertify team reviews and publishes approved labs
 
-Once a lab is published, it appears in the marketplace and you can see earnings in the **Creator Dashboard** tab.
+After publishing, your lab appears in the marketplace. The **Creator Dashboard** tab shows earnings, execution counts, and payout status.
 
 ---
 
 ## Re-syncing after changes
 
-After you push changes to a lab YAML, go back to Creator Studio → "Import from GitHub" and click **"Sync Labs"** again. Existing labs are updated; new files create new draft labs.
+Push your changes to GitHub, then go back to Creator Studio → "Import from GitHub" → **"Sync Labs"**. Existing labs are updated; new folders create new draft labs.
 
 ---
 
-## Validation script format
+## Available images
 
-Scripts referenced in `validation_script` receive no arguments and must exit `0` on success, non-zero on failure. They run inside the candidate's live environment.
-
-```bash
-#!/bin/bash
-# docs/verify_task.sh — example
-id deploy &>/dev/null || exit 1
-[ -d /home/deploy ] || exit 1
-exit 0
-```
+See **[docs/images.md](docs/images.md)** for the full list of available container images for VDI terminal and desktop labs, including specialized images for DevOps, Python, Java, security, and more.
 
 ---
 
 ## Questions?
 
 - Open an issue in this repo
-- Contact support via [demo.skillcertify.io](https://demo.skillcertify.io)
-- Read the creator docs at [demo.skillcertify.io/talent/creator](https://demo.skillcertify.io/talent/creator)
+- Contact support at [demo.skillcertify.io](https://demo.skillcertify.io)
+- View your labs in the [Creator Studio](https://demo.skillcertify.io/talent/creator)

@@ -17,12 +17,10 @@ tags:
   - beginner
 duration_minutes: 30
 passing_score: 70
-credits: 0   # free lab
 
 environment:
   wasm_image: skillcertify/archlinux-wasm:latest
   init_script: |
-    # Packages installed before the lab starts (runs silently)
     pacman -Sy --noconfirm bash coreutils grep sed gawk 2>/dev/null
 
 instructions: |
@@ -33,7 +31,7 @@ instructions: |
   **Tips:**
   - Use the terminal on the right to run your scripts
   - All changes are saved for the duration of the session
-  - You can check your progress at any time by clicking **Check Tasks**
+  - Click **Check Tasks** at any time to see your progress
 
 challenges:
   - id: hello-world
@@ -42,7 +40,7 @@ challenges:
       Create a file called `/root/hello.sh` that prints `Hello, World!` when executed.
     type: script
     points: 20
-    validation_script: docs/validate_hello.sh
+    validation_script: labs/bash-scripting-basics/validate_hello.sh
 
   - id: variables
     title: "Variables and Arithmetic"
@@ -51,18 +49,18 @@ challenges:
       Example: `./calc.sh 3 7` should print `10`.
     type: script
     points: 25
-    validation_script: docs/validate_calc.sh
+    validation_script: labs/bash-scripting-basics/validate_calc.sh
 
   - id: loops
-    title: "For Loop"
+    title: "For Loop — Countdown"
     description: |
-      Create `/root/countdown.sh` that counts down from 5 to 1, printing each number
-      on a new line, then prints `Go!`.
+      Create `/root/countdown.sh` that counts down from 5 to 1 (one number per line)
+      then prints `Go!`.
     type: script
     points: 25
-    validation_script: docs/validate_countdown.sh
+    validation_script: labs/bash-scripting-basics/validate_countdown.sh
 
-  - id: knowledge-1
+  - id: knowledge-shebang
     title: "Shebang Line"
     description: "Which shebang line is correct for a Bash script?"
     type: single_choice
@@ -74,7 +72,7 @@ challenges:
       - "#!/usr/bin/env sh"
     answer: "#!/bin/bash"
 
-  - id: knowledge-2
+  - id: knowledge-exit
     title: "Exit Codes"
     description: "What exit code indicates success in a Bash script?"
     type: single_choice

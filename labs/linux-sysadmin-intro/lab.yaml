@@ -18,12 +18,10 @@ tags:
   - permissions
 duration_minutes: 45
 passing_score: 70
-credits: 1
 
 environment:
-  image: skillcertify/ubuntu-vdi:22.04
+  image: ghcr.io/skillcertify/vdi-ubuntu-terminal:22.04
   init_script: |
-    # This script runs inside the candidate's VM before the lab starts
     apt-get update -qq
     apt-get install -y -qq net-tools curl wget
 
@@ -32,56 +30,53 @@ instructions: |
 
   You have a fresh Ubuntu 22.04 server. Complete the tasks below using the terminal.
 
-  **Environment notes:**
+  **Notes:**
   - You are logged in as `root`
-  - The internet is available
-  - All work is in this session only — nothing is saved after it ends
-
-  Good luck!
+  - Internet access is available
+  - Click **Check Tasks** to grade each task
 
 challenges:
   - id: create-user
     title: "Create a System User"
     description: |
       Create a user named `deploy` with:
-      - A home directory at `/home/deploy`
-      - The default shell set to `/bin/bash`
-      - Added to the `sudo` group
+      - Home directory at `/home/deploy`
+      - Default shell `/bin/bash`
+      - Member of the `sudo` group
     type: script
     points: 20
-    validation_script: docs/validate_user.sh
+    validation_script: labs/linux-sysadmin-intro/validate_user.sh
 
   - id: file-permissions
     title: "Set File Permissions"
     description: |
-      Create the file `/opt/app/config.env` and set its permissions so that:
-      - The owner (`root`) has read and write access
-      - The group has read-only access
-      - Others have no access
+      Create the file `/opt/app/config.env` and set its permissions to `640`:
+      - Owner (`root`): read + write
+      - Group: read only
+      - Others: no access
     type: script
     points: 20
-    validation_script: docs/validate_permissions.sh
+    validation_script: labs/linux-sysadmin-intro/validate_permissions.sh
 
   - id: process-management
     title: "Find and Kill a Process"
     description: |
-      Start `sleep 9999` in the background (e.g. with `sleep 9999 &`),
-      then find its PID using `ps` or `pgrep` and kill it with `SIGTERM`.
+      Start `sleep 9999` in the background, then kill it using `SIGTERM`.
       When you click **Check Tasks**, no `sleep 9999` process should be running.
     type: script
     points: 20
-    validation_script: docs/validate_process.sh
+    validation_script: labs/linux-sysadmin-intro/validate_process.sh
 
   - id: disk-usage
     title: "Disk Usage Report"
     description: |
-      Write the output of `df -h` to the file `/root/disk_report.txt`.
+      Write the output of `df -h` to `/root/disk_report.txt`.
     type: script
     points: 15
-    validation_script: docs/validate_disk.sh
+    validation_script: labs/linux-sysadmin-intro/validate_disk.sh
 
   - id: knowledge-chmod
-    title: "chmod 755"
+    title: "What does chmod 755 mean?"
     description: "What permissions does `chmod 755` give to a file?"
     type: single_choice
     points: 10
@@ -93,8 +88,8 @@ challenges:
     answer: "Owner: rwx, Group: r-x, Others: r-x"
 
   - id: knowledge-signals
-    title: "Linux Signals"
-    description: "Which signals can terminate a process? Select all that apply."
+    title: "Which signals terminate a process?"
+    description: "Select all signals that can terminate a process."
     type: multiple_choice
     points: 15
     options:
