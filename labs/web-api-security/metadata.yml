@@ -1,0 +1,93 @@
+version: 1
+name: web-api-security-basics
+title: Web & API Security — Basics
+language: english
+category: security
+uuid: c0e6bcd9-8832-4f99-bbaf-faf8afb73ed4
+credits: 2
+description: |
+  Find and exploit common web vulnerabilities in a live environment.
+  Attack OWASP Juice Shop (a vulnerable web app) and VAmPI
+  (a vulnerable REST API) running alongside your desktop.
+difficulty: intermediate
+environment_type: vdi_desktop
+skills_to_check:
+  - web-security
+  - api-security
+  - owasp
+tags:
+  - security
+  - owasp
+  - api
+  - burp
+  - sql-injection
+time: 3600
+passing_score: 70
+docs:
+  title: Web & API Security — Basics
+  details:
+    intro:
+      content: |
+        You have two live targets running in your lab environment:
+
+        | Target | URL | Description |
+        |--------|-----|-------------|
+        | OWASP Juice Shop | http://juice-shop:3000 | Deliberately vulnerable Node.js web app |
+        | VAmPI | http://vampi:5000 | Deliberately vulnerable REST API |
+
+        Open a terminal or Firefox to get started.
+
+        **Tools available:** curl, Burp Suite CE, nmap, sqlmap, httpie
+
+        **Rules:** Only attack the provided targets — no external hosts.
+
+    questions:
+      - type: script
+        title: "SQL Injection — Admin Login"
+        content: |
+          Bypass the Juice Shop login form using SQL injection to log in as the administrator.
+
+          When done, save your JWT token to `/root/admin_token.txt`.
+
+          **Hint:** The email field is vulnerable. Try classic SQLi payloads.
+        answer: docs/verify/task-001.sh
+        points: 25
+
+      - type: script
+        title: "API Authentication Bypass"
+        content: |
+          Register a user on VAmPI (`POST /users/v1/register`) then find an endpoint
+          that returns another user's data without proper authorization.
+
+          Save the leaked email to `/root/leaked_email.txt`.
+        answer: docs/verify/task-002.sh
+        points: 25
+
+      - type: script
+        title: "BOLA — Broken Object Level Authorization"
+        content: |
+          VAmPI has a BOLA vulnerability. As a regular user, access the book endpoint
+          `/books/v1/<title>` for a book you did not create.
+
+          Save the book title you accessed to `/root/bola_book.txt`.
+        answer: docs/verify/task-003.sh
+        points: 20
+
+helm_packages:
+  - name: workspace
+    helm_repository: $HELM_LOCAL_REPO_PATH
+    helm_package_name: workspace
+    helm_package_version: ""
+    helm_values_path: helm-values/workspace.yaml
+
+  - name: owasp-juice-shop
+    helm_repository: oci://ghcr.io/skillcertify
+    helm_package_name: owasp-juice-shop
+    helm_package_version: "0.1.0"
+    helm_values_path: helm-values/owasp-juice-shop.yaml
+
+  - name: vampi
+    helm_repository: oci://ghcr.io/skillcertify
+    helm_package_name: vampi
+    helm_package_version: "0.1.0"
+    helm_values_path: helm-values/vampi.yaml

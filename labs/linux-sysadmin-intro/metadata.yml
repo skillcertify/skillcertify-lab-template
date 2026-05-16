@@ -1,0 +1,77 @@
+version: 1
+name: linux-sysadmin-intro
+title: Linux SysAdmin — Introduction
+language: english
+category: linux
+uuid: 585b8585-2219-470b-b1b2-00f33a239a76
+credits: 1
+description: |
+  Hands-on Linux system administration: user management, file permissions,
+  process control, and basic networking. Runs on a real Ubuntu cloud VM.
+difficulty: intermediate
+environment_type: vdi_terminal
+skills_to_check:
+  - linux
+  - bash
+  - sysadmin
+tags:
+  - linux
+  - sysadmin
+  - ubuntu
+  - permissions
+time: 2700
+passing_score: 70
+docs:
+  title: Linux SysAdmin — Introduction
+  details:
+    intro:
+      content: |
+        You have a fresh Ubuntu 22.04 server. Complete the tasks below using the terminal.
+
+        **Notes:**
+        - You are logged in as `root`
+        - Internet access is available
+        - Click **Check Tasks** to grade each task
+
+    questions:
+      - type: script
+        title: "Create a System User"
+        content: |
+          Create a user named `deploy` with:
+          - Home directory at `/home/deploy`
+          - Default shell `/bin/bash`
+          - Member of the `sudo` group
+        answer: docs/verify/task-001.sh
+        points: 20
+
+      - type: script
+        title: "Set File Permissions"
+        content: |
+          Create the file `/opt/app/config.env` and set its permissions to `640`:
+          - Owner (`root`): read + write
+          - Group: read only
+          - Others: no access
+        answer: docs/verify/task-002.sh
+        points: 20
+
+      - type: script
+        title: "Find and Kill a Process"
+        content: |
+          Start `sleep 9999` in the background, then kill it using `SIGTERM`.
+          When you click **Check Tasks**, no `sleep 9999` process should be running.
+        answer: docs/verify/task-003.sh
+        points: 20
+
+      - type: script
+        title: "Disk Usage Report"
+        content: |
+          Write the output of `df -h` to `/root/disk_report.txt`.
+        answer: docs/verify/task-004.sh
+        points: 15
+
+helm_packages:
+  - name: workspace
+    helm_repository: $HELM_LOCAL_REPO_PATH
+    helm_package_name: workspace
+    helm_package_version: ""
+    helm_values_path: helm-values/workspace.yaml

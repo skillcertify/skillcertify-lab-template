@@ -13,9 +13,9 @@ Fork this repo  →  Add your lab in labs/<name>/  →  Push to GitHub  →  Imp
 ```
 
 1. **Fork this repo** and create a folder inside `labs/` for each lab you want to build
-2. **Write your lab** — a `lab.yaml` file and optional validation scripts (`.sh`) in the same folder
+2. **Write your lab** — a `metadata.yml` file and optional validation scripts (`.sh`) in the same folder
 3. **Connect your GitHub repo** in [Creator Studio](https://demo.skillcertify.io/talent/creator) → "My Labs" → "Import from GitHub"
-4. **Preview and sync** — the platform fetches every `lab.yaml` under `labs/` and shows a preview before importing
+4. **Preview and sync** — the platform fetches every `metadata.yml` under `labs/` and shows a preview before importing
 5. **Wait for approval** — the SkillCertify team reviews new labs (usually within 24–48 h)
 6. **Earn credits** — you receive 30% of the credit price every time a candidate completes your lab
 
@@ -35,27 +35,29 @@ Fork this repo  →  Add your lab in labs/<name>/  →  Push to GitHub  →  Imp
 skillcertify-lab-template/
 ├── labs/
 │   ├── bash-scripting-basics/         # WASM — free, beginner
-│   │   ├── lab.yaml
+│   │   ├── metadata.yml
 │   │   └── docs/
 │   ├── python-data-analysis/          # WASM — free, beginner (pandas)
-│   │   ├── lab.yaml
+│   │   ├── metadata.yml
 │   │   └── docs/
 │   ├── linux-sysadmin-intro/          # VDI terminal — 1 credit, intermediate
-│   │   ├── lab.yaml
+│   │   ├── metadata.yml
+│   │   ├── helm-values/
 │   │   └── docs/
 │   ├── docker-fundamentals/           # VDI desktop — 2 credits, intermediate
-│   │   ├── lab.yaml
+│   │   ├── metadata.yml
+│   │   ├── helm-values/
 │   │   └── docs/
 │   ├── kubernetes-basics/             # VDI terminal + vCluster — 2 credits
-│   │   ├── lab.yaml
+│   │   ├── metadata.yml
 │   │   ├── helm-values/
 │   │   └── docs/
 │   ├── sql-injection-fundamentals/    # VDI desktop + Juice Shop — 2 credits
-│   │   ├── lab.yaml
+│   │   ├── metadata.yml
 │   │   ├── helm-values/
 │   │   └── docs/
 │   └── web-api-security/              # VDI desktop + Juice Shop + VAmPI sidecars
-│       ├── lab.yaml
+│       ├── metadata.yml
 │       ├── helm-values/            # One values file per Helm release
 │       │   ├── workspace.yaml
 │       │   ├── owasp-juice-shop.yaml
@@ -72,20 +74,20 @@ skillcertify-lab-template/
         └── validate-labs.yml       # CI: enforces image whitelist + structure checks
 ```
 
-Each lab lives in its own folder. The platform picks up any file named `lab.yaml` (or `lab.yml`) inside any subdirectory of `labs/`.
+Each lab lives in its own folder. The platform picks up any file named `metadata.yml` inside any subdirectory of `labs/`.
 
 ---
 
 ## Lab types
 
-| Type | `mode` value | Environment | Credits | Best for |
-|------|-------------|-------------|---------|----------|
-| **WASM** | `wasm` | Browser-based Linux (Arch, no install needed) | **Free** (always 0) | Bash scripting, CLI tasks, quick assessments |
+| Type | `environment_type` value | Environment | Credits | Best for |
+|------|--------------------------|-------------|---------|----------|
+| **WASM** | `wasm` | Browser-based Linux VM (no cloud needed) | **Free** (always 0) | Bash scripting, CLI tasks, quick assessments |
 | **VDI Terminal** | `vdi_terminal` | Cloud Linux VM — terminal only | Paid (≥ 1 credit) | Server admin, DevOps, networking |
 | **VDI Desktop** | `vdi_desktop` | Cloud Linux VM — full GUI desktop | Paid (≥ 1 credit) | IDE coding, data science, desktop tools |
 
 > **WASM labs are always free.** They run entirely in the candidate's browser with no cloud VM cost.
-> **VDI labs cost credits** (set `marketplace.credit_price` ≥ 1). Free VDI labs are not supported.
+> **VDI labs cost credits** (set `credits` ≥ 1). Free VDI labs are not supported.
 
 See **[docs/images.md](docs/images.md)** for the full list of available container images and WASM environments.
 
@@ -94,36 +96,46 @@ See **[docs/images.md](docs/images.md)** for the full list of available containe
 ## Quick example
 
 ```yaml
-# labs/my-lab/lab.yaml
+# labs/my-lab/metadata.yml
 version: 1
-title: "My First Lab"
-slug: my-first-lab
-description: "A short description shown on the lab card."
-difficulty: beginner        # beginner | intermediate | advanced
-mode: wasm                  # wasm | vdi_terminal | vdi_desktop
+name: my-first-lab
+title: My First Lab
+language: english
 category: linux
-skills: [bash, linux]
-duration_minutes: 30
+uuid: 00000000-0000-0000-0000-000000000000   # generate with: python3 -c "import uuid; print(uuid.uuid4())"
+credits: 0
+description: A short description shown on the lab card.
+difficulty: beginner        # beginner | intermediate | advanced
+environment_type: wasm      # wasm | vdi_terminal | vdi_desktop
+wasm_image: linux           # WASM labs only; omit for VDI
+skills_to_check:
+  - bash
+  - linux
+tags:
+  - bash
+  - beginner
+time: 1800                  # seconds (1800 = 30 min)
 passing_score: 70
-
-challenges:
-  - id: task-1
-    title: "Create a file"
-    description: "Create /root/hello.txt containing the text 'Hello'."
-    type: script
-    points: 100
-    validation_script: docs/validate.sh
-
-scoring:
-  passing_score: 70
-  max_score: 100
-
-marketplace:
-  credit_price: 0   # WASM labs are always free — this value is ignored by the platform
+init_script: |              # WASM only — runs inside the browser VM before lab starts
+  #!/bin/bash
+  mkdir -p ~/workspace
+  echo "Ready."
+docs:
+  title: My First Lab
+  details:
+    intro:
+      content: |
+        Welcome! Complete the tasks below using the terminal.
+    questions:
+      - type: script
+        title: "Create a file"
+        content: "Create /root/hello.txt containing the text 'Hello'."
+        answer: docs/verify/task-001.sh
+        points: 100
 ```
 
 ```bash
-# labs/my-lab/docs/validate.sh
+# labs/my-lab/docs/verify/task-001.sh
 #!/bin/bash
 [ -f /root/hello.txt ] || { echo '{"pass":false,"message":"Create /root/hello.txt first."}'; exit 0; }
 grep -q "Hello" /root/hello.txt || { echo '{"pass":false,"message":"hello.txt must contain the word Hello."}'; exit 0; }
@@ -138,41 +150,38 @@ echo '{"pass":true,"message":"Task completed correctly."}'
 
 | Field | Required | Type | Description |
 |-------|----------|------|-------------|
+| `name` | ✅ | string | Unique lab slug — must match the folder name under `labs/` |
 | `title` | ✅ | string | Display name shown to candidates |
 | `description` | ✅ | string | Short summary shown on the lab card |
 | `difficulty` | ✅ | string | `beginner` / `intermediate` / `advanced` |
-| `mode` | ✅ | string | `wasm`, `vdi_terminal`, or `vdi_desktop` |
-| `duration_minutes` | ✅ | int | Time limit in minutes |
-| `slug` | | string | URL-friendly ID (auto-generated from title if omitted) |
-| `version` | | int | Schema version, use `1` |
-| `category` | | string | e.g. `linux`, `docker`, `python`, `networking` |
-| `skills` | | list | Skills validated by this lab |
+| `environment_type` | ✅ | string | `wasm`, `vdi_terminal`, or `vdi_desktop` |
+| `credits` | ✅ | int | Credits a candidate spends; WASM must be `0`, VDI must be ≥ 1 |
+| `time` | ✅ | int | Time limit in **seconds** (e.g. `1800` = 30 min) |
+| `version` | | int | Schema version — use `1` |
+| `language` | | string | `english` (default) |
+| `uuid` | | string | Stable UUID for this lab — generate once, never change |
+| `category` | | string | e.g. `linux`, `devops`, `python`, `security` |
+| `skills_to_check` | | list | Skills validated by this lab |
 | `tags` | | list | Extra searchable tags |
-| `instructions` | | string | Markdown shown to the candidate at the start |
 | `passing_score` | | int | Minimum score % to pass (default: `70`) |
-| `credits` | | int | Credits a candidate spends (shorthand for `marketplace.credit_price`) |
+| `wasm_image` | | string | WASM labs only — always `linux` |
+| `init_script` | | string | WASM labs only — bash script run in the VM before the lab starts |
 
-### `environment` block
-
-```yaml
-environment:
-  image: ghcr.io/skillcertify/vdi-terminal:latest   # VDI labs only
-  wasm_image: linux                                  # WASM labs only (optional, default: linux)
-  init_script: |
-    # Bash commands run inside the VM before the lab starts
-    apt-get install -y curl
-```
-
-### `challenges` list
+### `docs` block
 
 ```yaml
-challenges:
-  - id: unique-task-id         # must be unique within the lab
-    title: "Task title"
-    description: "What the candidate must do. Markdown supported."
-    type: script               # see task types below
-    points: 25
-    validation_script: docs/validate_task.sh   # relative to this lab's folder
+docs:
+  title: My Lab Title
+  details:
+    intro:
+      content: |
+        Markdown shown to the candidate at the start of the lab.
+    questions:
+      - type: script
+        title: "Task title"
+        content: "What the candidate must do. Markdown supported."
+        answer: docs/verify/task-001.sh   # path relative to this lab's folder
+        points: 25
 ```
 
 ### Task types
@@ -181,26 +190,28 @@ challenges:
 |------|----------------|
 | `script` | Bash script runs inside the VM; must exit `0` to pass — the only supported type |
 
-### `scoring` block
+### VDI labs — `helm-values/workspace.yaml`
+
+For VDI labs the container image and init script go in `helm-values/workspace.yaml`, **not** in `metadata.yml`:
 
 ```yaml
-scoring:
-  passing_score: 70   # % required to pass
-  max_score: 100
-```
-
-### `marketplace` block
-
-```yaml
-marketplace:
-  credit_price: 2   # credits candidates spend; 0 = free
+# helm-values/workspace.yaml
+vdi:
+  image: ghcr.io/skillcertify/vdi-terminal   # or vdi-xfce-ubuntu for desktop
+  tag: latest
+  imagePullPolicy: Always
+  permissions:
+    root: true
+  init_script: |
+    #!/bin/bash
+    apt-get install -y -qq your-package
 ```
 
 ---
 
 ## Validation scripts
 
-Scripts referenced in `validation_script` run inside the candidate's live environment.
+Scripts referenced in `answer` run inside the candidate's live environment.
 
 - Path is **relative to the lab folder** (e.g. `docs/validate_user.sh` resolves to `labs/my-lab/docs/validate_user.sh`)
 - Put scripts inside a `docs/` subfolder — this matches the convention used in the official SkillCertify labs repo
@@ -234,7 +245,7 @@ The `message` is shown to the candidate in the task panel — make it actionable
 2. In the **My Labs** tab, click **"Import from GitHub"**
 3. Enter your repository (e.g. `youruser/skillcertify-lab-template`), branch (`main`), and optionally a GitHub token for private repos
 4. Click **"Preview Labs"** to review what will be imported
-5. Click **"Sync Labs"** — each `lab.yaml` becomes a draft lab in your account
+5. Click **"Sync Labs"** — each `metadata.yml` becomes a draft lab in your account
 6. The SkillCertify team reviews and publishes approved labs
 
 After publishing, your lab appears in the marketplace. The **Creator Dashboard** tab shows earnings, execution counts, and payout status.
@@ -259,7 +270,7 @@ Push your changes to GitHub, then go back to Creator Studio → "Import from Git
 VDI labs can deploy additional services alongside the desktop using `helm_packages`. Each sidecar runs in the same isolated namespace and is reachable via its Helm release name as a DNS hostname.
 
 ```yaml
-# lab.yaml
+# metadata.yml
 helm_packages:
   - name: workspace                        # required for all VDI labs
     helm_repository: $HELM_LOCAL_REPO_PATH
@@ -283,7 +294,7 @@ See the `labs/web-api-security/` example for a working multi-chart lab. Full cha
 > **Only images from `ghcr.io/skillcertify/` are permitted.**
 
 Labs that reference images from any other registry will be rejected at import time and will fail CI. This applies to:
-- `environment.image` in `lab.yaml`
+- `vdi.image` in `helm-values/workspace.yaml`
 - `image:` fields in all `helm-values/*.yaml` files
 
 The GitHub Actions workflow in `.github/workflows/validate-labs.yml` enforces this automatically on every push and pull request. Use images from **[docs/images.md](docs/images.md)** and chart values from **[docs/helm-charts.md](docs/helm-charts.md)** — they are already whitelisted.

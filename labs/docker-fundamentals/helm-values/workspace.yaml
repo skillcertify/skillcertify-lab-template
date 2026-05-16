@@ -1,0 +1,11 @@
+vdi:
+  image: ghcr.io/skillcertify/vdi-xfce-ubuntu
+  tag: latest
+  imagePullPolicy: Always
+  permissions:
+    root: true
+  init_script: |
+    #!/bin/bash
+    apt-get update -qq
+    apt-get install -y -qq docker.io docker-compose-plugin curl
+    systemctl start docker 2>/dev/null || true

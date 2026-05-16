@@ -1,0 +1,104 @@
+version: 1
+name: python-data-analysis
+title: Python Data Analysis with pandas
+language: english
+category: python
+uuid: 89cc3f07-d77f-4188-a164-043fbf7e829f
+credits: 0
+description: |
+  Practice real-world data analysis skills using Python and pandas.
+  Load a CSV dataset, clean it, aggregate it, and answer business questions —
+  entirely in the browser with no setup required.
+difficulty: beginner
+environment_type: wasm
+wasm_image: linux
+skills_to_check:
+  - python
+  - pandas
+  - data-analysis
+  - data-science
+tags:
+  - python
+  - pandas
+  - data-analysis
+  - data-science
+  - csv
+  - free
+  - browser
+time: 2700
+passing_score: 70
+init_script: |
+  #!/bin/bash
+  cat > /root/sales.csv << 'EOF'
+  Month,Product,Region,Quantity,Revenue
+  Jan,Widget A,North,120,2400
+  Jan,Widget B,South,85,1700
+  Feb,Widget A,North,95,1900
+  Feb,Widget B,East,110,2200
+  Mar,Widget A,South,140,2800
+  Mar,Widget C,North,60,1800
+  Apr,Widget B,North,75,1500
+  Apr,Widget C,East,90,2700
+  May,Widget A,East,130,2600
+  May,Widget C,South,55,1650
+  EOF
+  echo "Lab environment ready. Dataset at /root/sales.csv"
+docs:
+  title: Python Data Analysis with pandas
+  details:
+    intro:
+      content: |
+        A CSV file with sales data has been placed at `/root/sales.csv`.
+
+        Use Python 3 and pandas to answer each question. Save your answers to files
+        as described in each task.
+
+        **Quick start:**
+        ```python
+        import pandas as pd
+        df = pd.read_csv('/root/sales.csv')
+        print(df.head())
+        print(df.columns.tolist())
+        ```
+
+        Run scripts with: `python3 my_script.py`
+
+    questions:
+      - type: script
+        title: "Load the Dataset"
+        content: |
+          Load `/root/sales.csv` into a DataFrame and save the **total row count** to
+          `/root/row_count.txt`.
+
+          ```python
+          import pandas as pd
+          df = pd.read_csv('/root/sales.csv')
+          with open('/root/row_count.txt', 'w') as f:
+              f.write(str(len(df)))
+          ```
+        answer: docs/verify/task-001.sh
+        points: 20
+
+      - type: script
+        title: "Find the Best-Selling Product"
+        content: |
+          Find the product with the highest total **Quantity** sold across all rows
+          and save its name to `/root/top_product.txt`.
+        answer: docs/verify/task-002.sh
+        points: 25
+
+      - type: script
+        title: "Calculate Total Revenue per Month"
+        content: |
+          Compute total revenue grouped by `Month` and save the result as a CSV to
+          `/root/monthly_revenue.csv` (columns: `Month`, `Revenue`).
+        answer: docs/verify/task-003.sh
+        points: 25
+
+      - type: script
+        title: "Filter by Region"
+        content: |
+          Filter rows where `Region == 'North'` and save the count of matching rows
+          to `/root/north_count.txt`.
+        answer: docs/verify/task-004.sh
+        points: 15

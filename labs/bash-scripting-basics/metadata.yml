@@ -1,0 +1,67 @@
+version: 1
+name: bash-scripting-basics
+title: Bash Scripting Basics
+language: english
+category: linux
+uuid: c4a49001-049f-4921-85b2-a6d6be2eb23e
+credits: 0
+description: |
+  Test your knowledge of essential Bash scripting: variables, loops, conditionals,
+  and file I/O. Runs entirely in the browser — no server required.
+difficulty: beginner
+environment_type: wasm
+wasm_image: linux
+skills_to_check:
+  - bash
+  - linux
+  - scripting
+tags:
+  - bash
+  - shell
+  - beginner
+  - free
+  - browser
+time: 1800
+passing_score: 70
+init_script: |
+  #!/bin/bash
+  mkdir -p ~/scripts ~/data
+  echo "Lab environment ready."
+docs:
+  title: Bash Scripting Basics
+  details:
+    intro:
+      content: |
+        Welcome to Bash Scripting Basics!
+
+        Write and run small Bash scripts directly in your browser terminal.
+
+        **Tips:**
+        - Use the terminal on the right to run your scripts
+        - All changes are saved for the duration of the session
+        - Click **Check Tasks** at any time to see your progress
+
+    questions:
+      - type: script
+        title: "Hello, World!"
+        content: |
+          Create a file called `/root/hello.sh` that prints `Hello, World!` when executed.
+          Make it executable with `chmod +x`.
+        answer: docs/verify/task-001.sh
+        points: 20
+
+      - type: script
+        title: "Variables and Arithmetic"
+        content: |
+          Create `/root/calc.sh` that takes two numbers as arguments and prints their sum.
+          Example: `./calc.sh 3 7` should print `10`.
+        answer: docs/verify/task-002.sh
+        points: 25
+
+      - type: script
+        title: "For Loop — Countdown"
+        content: |
+          Create `/root/countdown.sh` that counts down from 5 to 1 (one number per line)
+          then prints `Go!`.
+        answer: docs/verify/task-003.sh
+        points: 25

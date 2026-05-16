@@ -1,0 +1,98 @@
+version: 1
+name: sql-injection-fundamentals
+title: SQL Injection — Fundamentals
+language: english
+category: security
+uuid: fffa8c81-fed4-47bf-8521-accf26274432
+credits: 2
+description: |
+  Master the most critical web vulnerability. Exploit SQL injection flaws
+  in a live web application (OWASP Juice Shop) to bypass authentication, extract
+  data, and escalate privileges — all in a safe, isolated environment.
+difficulty: intermediate
+environment_type: vdi_desktop
+skills_to_check:
+  - sql-injection
+  - web-security
+  - owasp
+  - burp-suite
+tags:
+  - security
+  - sql-injection
+  - sqli
+  - owasp
+  - ethical-hacking
+  - penetration-testing
+time: 3600
+passing_score: 70
+docs:
+  title: SQL Injection — Fundamentals
+  details:
+    intro:
+      content: |
+        **Target:** OWASP Juice Shop running at `http://juice-shop:3000`
+
+        Open Firefox and navigate to the target. You have `curl`, `sqlmap`, and Burp Suite CE
+        available in the terminal.
+
+        **Reminder:** Only attack the provided target — no external hosts.
+
+        ### Quick reference
+
+        Test for SQLi in login:
+        ```
+        Email: ' OR '1'='1
+        Password: anything
+        ```
+
+        Extract data with sqlmap:
+        ```bash
+        sqlmap -u "http://juice-shop:3000/rest/products/search?q=test" --dbs
+        ```
+
+    questions:
+      - type: script
+        title: "Authentication Bypass via SQLi"
+        content: |
+          Bypass the Juice Shop login form using SQL injection to log in as **any user**.
+
+          Go to `http://juice-shop:3000/#/login` and use a classic SQLi payload in the
+          email field. Once logged in, save your JWT token to `/root/bypass_token.txt`.
+        answer: docs/verify/task-001.sh
+        points: 30
+
+      - type: script
+        title: "Log in as the Administrator"
+        content: |
+          Find the administrator's email and log in using SQLi.
+          Save the admin JWT to `/root/admin_token.txt`.
+
+          **Hint:** Try `admin@juice-sh.op` in the email field with a SQLi suffix.
+        answer: docs/verify/task-002.sh
+        points: 30
+
+      - type: script
+        title: "Extract User Emails via SQLi"
+        content: |
+          Use sqlmap or manual SQLi to extract the list of registered users from the
+          database. Save all email addresses (one per line) to `/root/users.txt`.
+
+          ```bash
+          sqlmap -u "http://juice-shop:3000/rest/products/search?q=test" \
+                 --tables --dump -T Users --columns email --batch
+          ```
+        answer: docs/verify/task-003.sh
+        points: 20
+
+helm_packages:
+  - name: workspace
+    helm_repository: $HELM_LOCAL_REPO_PATH
+    helm_package_name: workspace
+    helm_package_version: ""
+    helm_values_path: helm-values/workspace.yaml
+
+  - name: juice-shop
+    helm_repository: oci://ghcr.io/skillcertify
+    helm_package_name: owasp-juice-shop
+    helm_package_version: "0.1.0"
+    helm_values_path: helm-values/owasp-juice-shop.yaml
