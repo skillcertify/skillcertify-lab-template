@@ -19,9 +19,7 @@ duration_minutes: 30
 passing_score: 70
 
 environment:
-  wasm_image: skillcertify/archlinux-wasm:latest
-  init_script: |
-    pacman -Sy --noconfirm bash coreutils grep sed gawk 2>/dev/null
+  wasm_image: linux
 
 instructions: |
   # Bash Scripting Basics

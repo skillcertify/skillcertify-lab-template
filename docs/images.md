@@ -9,12 +9,13 @@ All images are hosted at **`ghcr.io/skillcertify/`** and are publicly available.
 WASM labs run entirely in the candidate's browser using a Linux virtual machine
 powered by [v86](https://github.com/copy/v86). No cloud infrastructure is needed.
 
-The platform provides a single built-in Arch Linux environment. You do not need
-to specify a custom image — leave `wasm_image` unset or omit the `environment` block.
+The platform provides a built-in Linux environment (buildroot-based). Set
+`wasm_image: linux` or omit the `environment` block entirely — both are equivalent.
 
 ```yaml
 mode: wasm
-# No environment block needed — the platform provides the Arch Linux VM
+environment:
+  wasm_image: linux   # default — can be omitted
 ```
 
 **Pre-installed packages:** bash, coreutils, grep, sed, gawk, python3, curl, git, vim

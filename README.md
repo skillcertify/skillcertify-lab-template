@@ -157,7 +157,7 @@ echo '{"pass":true,"message":"Task completed correctly."}'
 ```yaml
 environment:
   image: ghcr.io/skillcertify/vdi-terminal:latest   # VDI labs only
-  wasm_image: skillcertify/archlinux-wasm:latest     # WASM labs only (optional)
+  wasm_image: linux                                  # WASM labs only (optional, default: linux)
   init_script: |
     # Bash commands run inside the VM before the lab starts
     apt-get install -y curl
